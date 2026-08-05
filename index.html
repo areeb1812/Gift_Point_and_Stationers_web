@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Point & Stationers - Inventory Management System</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- App Container -->
+    <div id="app-container">
+        <!-- ========================================== -->
+        <!-- LOGIN SCREEN -->
+        <!-- ========================================== -->
+        <div id="login-screen" class="screen active">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="logo-container">
+                        <i class="fa-solid fa-gift logo-icon"></i>
+                    </div>
+                    <h1>Gift Point & Stationers</h1>
+                    <p>Information & Inventory Management System</p>
+                </div>
+                <!-- Step 1: Role Selection -->
+                <div id="role-selection-group">
+                    <h3 class="section-title">Select User Role</h3>
+                    <div class="role-cards-grid">
+                        <button type="button" class="role-card" onclick="selectRole('admin')">
+                            <i class="fa-solid fa-user-shield role-icon"></i>
+                            <span>Administrator</span>
+                        </button>
+                        <button type="button" class="role-card" onclick="selectRole('employee')">
+                            <i class="fa-solid fa-cash-register role-icon"></i>
+                            <span>Cashier / Employee</span>
+                        </button>
+                        <button type="button" class="role-card" onclick="selectRole('owner')">
+                            <i class="fa-solid fa-user-tie role-icon"></i>
+                            <span>Business Owner</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Step 2: Credentials Form (Hidden until role selected) -->
+                <form id="login-form" class="hidden" onsubmit="handleLogin(event)">
+                    <div class="selected-role-badge">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Role: <strong id="selected-role-name">Admin</strong></span>
+                        <button type="button" class="btn-text" onclick="resetRoleSelection()">Change</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-user-id">User ID</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-id-badge"></i>
+                            <input type="number" id="login-user-id" placeholder="e.g. 241462" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="login-username" placeholder="e.g. Aruj" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="login-password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <button type="submit" id="login-submit-btn" class="btn-primary">
+                        <span>Sign In</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    
+                    <div id="login-error-msg" class="error-banner hidden">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span id="login-error-text">Invalid credentials.</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ========================================== -->
+        <!-- MAIN DASHBOARD -->
+        <!-- ========================================== -->
+        <div id="dashboard-screen" class="screen">
+            <!-- Sidebar / Header -->
+            <header class="app-header">
+                <div class="header-logo">
+                    <i class="fa-solid fa-gift"></i>
+                    <span>Gift Point & Stationers</span>
+                </div>
+                <div class="user-profile">
+                    <span class="user-avatar" id="avatar-initials">A</span>
+                    <div class="user-info">
+                        <h4 id="display-user-name">Aruj</h4>
+                        <p id="display-user-role">Cashier / Employee</p>
+                    </div>
+                    <button id="logout-btn" class="btn-icon" onclick="handleLogout()" title="Logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </header>
+            <main class="dashboard-content">
+                <!-- ============================== -->
+                <!-- OWNER DASHBOARD -->
+                <!-- ============================== -->
+                <div id="owner-panel" class="role-panel hidden">
+                    <div class="panel-header">
+                        <h2>Business Owner Dashboard</h2>
+                        <p>Real-time analytics and financial summaries</p>
+                    </div>
+                    <!-- Stat Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon sales">
+                                <i class="fa-solid fa-money-bill-trend-up"></i>
+                            </div>
+                            <div class="stat-details">
+                                <p class="stat-label">Total Sales</p>
+                                <h3 id="owner-total-sales" class="stat-value">RS. 0.00</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon invoices">
+                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                            </div>
+                            <div class="stat-details">
+                                <p class="stat-label">Total Invoices</p>
+                                <h3 id="owner-total-invoices" class="stat-value">0</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon customers">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div class="stat-details">
+                                <p class="stat-label">Total Customers</p>
+                                <h3 id="owner-total-customers" class="stat-value">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Invoices Section -->
+                    <div class="dashboard-grid">
+                        <div class="card-container col-8">
+                            <div class="card-header">
+                                <h3>Recent Transactions</h3>
+                                <div class="search-box">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" id="owner-invoice-search" placeholder="Search Invoice ID..." oninput="filterInvoices()">
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="owner-sales-table" class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Invoice ID</th>
+                                            <th>Cashier</th>
+                                            <th>Date & Time</th>
+                                            <th>Total Amount</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="owner-sales-tbody">
+                                        <!-- Seeding dynamic recent sales -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Customer List panel for Owner -->
+                        <div class="card-container col-4">
+                            <div class="card-header">
+                                <h3>Customer List</h3>
+                            </div>
+                            <div class="table-responsive small-table">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Phone</th>
+                                            <th>Points</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="owner-customers-tbody">
+                                        <!-- Dynamic customer list -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ============================== -->
+                <!-- ADMIN DASHBOARD -->
+                <!-- ============================== -->
+                <div id="admin-panel" class="role-panel hidden">
+                    <div class="panel-header">
+                        <h2>Administrator Panel</h2>
+                        <p>Inventory maintenance, product CRUD operations, and loyalty registry control</p>
+                    </div>
+                    <div class="dashboard-grid">
+                        <!-- Product Catalog & CRUD -->
+                        <div class="card-container col-8">
+                            <div class="card-header">
+                                <h3>Inventory Stock Registry</h3>
+                                <div class="search-box">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" id="admin-product-search" placeholder="Search by name or desc..." oninput="loadAdminProducts()">
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Item Name</th>
+                                            <th>Description</th>
+                                            <th>Price (PKR)</th>
+                                            <th>Stock Level</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-products-tbody">
+                                        <!-- Dynamic products database CRUD -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Add/Edit Product form -->
+                        <div class="card-container col-4">
+                            <div class="card-header">
+                                <h3 id="product-form-title">Add New Product</h3>
+                                <button id="cancel-edit-btn" class="btn-text hidden" onclick="cancelProductEdit()">Cancel Edit</button>
+                            </div>
+                            <form id="product-crud-form" onsubmit="handleProductSubmit(event)">
+                                <input type="hidden" id="product-id-field">
+                                <div class="form-group">
+                                    <label for="product-name">Product Name *</label>
+                                    <input type="text" id="product-name" required placeholder="e.g. Spiral Notebook">
+                                </div>
+                                <div class="form-group">
+                                    <label for="product-desc">Description</label>
+                                    <textarea id="product-desc" rows="3" placeholder="e.g. A4 sized, grid line..."></textarea>
+                                </div>
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <label for="product-price">Price (PKR) *</label>
+                                        <input type="number" id="product-price" step="0.01" min="0" required placeholder="250.00">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="product-stock">Stock Qty *</label>
+                                        <input type="number" id="product-stock" min="0" required placeholder="50">
+                                    </div>
+                                </div>
+                                <button type="submit" id="product-submit-btn" class="btn-primary width-100">
+                                    <i class="fa-solid fa-plus"></i>
+                                    <span>Add Product</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid margin-top-2">
+                        <!-- Customer Registry -->
+                        <div class="card-container col-8">
+                            <div class="card-header">
+                                <h3>Loyalty Program Members</h3>
+                                <div class="search-box">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" id="admin-customer-search" placeholder="Search by phone..." oninput="loadAdminCustomers()">
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Customer Name</th>
+                                            <th>Phone Number</th>
+                                            <th>Loyalty Points</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-customers-tbody">
+                                        <!-- Dynamic customer registry CRUD -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Customer Creation -->
+                        <div class="card-container col-4">
+                            <div class="card-header">
+                                <h3>Register Customer</h3>
+                            </div>
+                            <form id="customer-register-form" onsubmit="handleCustomerSubmit(event, 'admin')">
+                                <div class="form-group">
+                                    <label for="customer-name">Customer Name *</label>
+                                    <input type="text" id="customer-name" required placeholder="e.g. Zainab Fatima">
+                                </div>
+                                <div class="form-group">
+                                    <label for="customer-phone">Contact Number *</label>
+                                    <input type="text" id="customer-phone" required placeholder="e.g. 03219876543">
+                                </div>
+                                <p class="info-text" style="margin-bottom:12px;">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    Loyalty points are earned automatically (1 point per RS. 100 spent). Duplicate phone numbers are rejected.
+                                </p>
+                                <button type="submit" class="btn-primary width-100">
+                                    <i class="fa-solid fa-user-plus"></i>
+                                    <span>Register Member</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- ============================== -->
+                <!-- EMPLOYEE / CASHIER DASHBOARD -->
+                <!-- ============================== -->
+                <div id="employee-panel" class="role-panel hidden">
+                    <div class="panel-header">
+                        <h2>Point of Sale Terminal</h2>
+                        <p>Create bills, scan items, and manage checkouts</p>
+                    </div>
+                    <div class="dashboard-grid">
+                        <!-- Catalog List for Selling -->
+                        <div class="card-container col-7">
+                            <div class="card-header">
+                                <h3>Product Catalog</h3>
+                                <div class="search-box">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" id="cashier-product-search" placeholder="Search items..." oninput="loadCashierProducts()">
+                                </div>
+                            </div>
+                            <div class="catalog-grid" id="cashier-catalog-items">
+                                <!-- Cards for products dynamically loaded -->
+                            </div>
+                        </div>
+                        <!-- Shopping Cart / Checkout Section -->
+                        <div class="card-container col-5">
+                            <div class="card-header">
+                                <h3>Active Shopping Cart</h3>
+                                <button class="btn-text error-text" onclick="clearCart()"><i class="fa-solid fa-trash-can"></i> Clear</button>
+                            </div>
+                            <!-- Cart Items List -->
+                            <div class="cart-items-wrapper" id="cart-items-list">
+                                <!-- Dynamic cart items -->
+                                <div class="empty-cart-msg">
+                                    <i class="fa-solid fa-cart-shopping"></i>
+                                    <p>Cart is currently empty. Click "Add to Cart" on catalog products.</p>
+                                </div>
+                            </div>
+                            <!-- Customer Lookup/Linkage -->
+                            <div class="cart-customer-section">
+                                <h4>Loyalty Customer Association</h4>
+                                <div class="customer-search-group">
+                                    <input type="text" id="cart-customer-phone-search" placeholder="Enter Member Phone Number...">
+                                    <button class="btn-secondary" type="button" onclick="lookupCustomerForCart()">Link</button>
+                                </div>
+                                <div id="linked-customer-banner" class="linked-customer-badge hidden">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <span>Linked: <strong id="linked-customer-name">Ali</strong> (<span id="linked-customer-points">15</span> Points)</span>
+                                    <button type="button" class="btn-icon" onclick="unlinkCustomerFromCart()"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                                <div id="register-quick-customer" class="hidden">
+                                    <p class="small-text info-text">No member found. Register them quickly below:</p>
+                                    <div class="quick-register-row">
+                                        <input type="text" id="quick-cust-name" placeholder="Full Name">
+                                        <button class="btn-text-btn" onclick="quickRegisterCustomer()">Create & Link</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Pricing Calculation & Currency Conversion -->
+                            <div class="cart-pricing-section">
+                                <div class="pricing-row">
+                                    <span>Cart Subtotal</span>
+                                    <span id="cart-pkr-subtotal">RS. 0.00</span>
+                                </div>
+                                <div class="pricing-row divider">
+                                    <div class="currency-converter-widget">
+                                        <label for="currency-convert-selector">Convert Total to:</label>
+                                        <select id="currency-convert-selector" onchange="handleCurrencyChange()">
+                                            <option value="PKR">PKR (Local)</option>
+                                            <option value="USD">USD ($)</option>
+                                            <option value="GBP">GBP (£)</option>
+                                            <option value="EUR">EUR (€)</option>
+                                            <option value="SAR">SAR (SR)</option>
+                                            <option value="AED">AED</option>
+                                        </select>
+                                    </div>
+                                    <div class="converted-price-display">
+                                        <span id="cart-converted-total" class="converted-val"></span>
+                                    </div>
+                                </div>
+                                <div class="pricing-row total">
+                                    <span>Checkout Total</span>
+                                    <span id="cart-pkr-total" class="total-pkr-val">RS. 0.00</span>
+                                </div>
+                            </div>
+                            <button class="btn-primary width-100 size-large margin-top-1" onclick="handleCheckout()">
+                                <i class="fa-solid fa-cash-register"></i>
+                                <span>Generate Bill & Checkout</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <!-- ========================================== -->
+        <!-- DIGITAL RECEIPT MODAL -->
+        <!-- ========================================== -->
+        <div id="receipt-modal" class="modal-overlay">
+            <div class="receipt-card">
+                <div class="modal-actions no-print">
+                    <button class="btn-icon" onclick="closeReceiptModal()" title="Close"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                
+                <!-- Receipt Printable Section -->
+                <div class="receipt-printable" id="receipt-printable-content">
+                    <div class="receipt-header">
+                        <i class="fa-solid fa-gift receipt-logo"></i>
+                        <h2>Gift Point & Stationers</h2>
+                        <p class="receipt-sub">Gifts, Toys, Cards, & Complete Stationery Solutions</p>
+                        <p class="receipt-address">Samanabad, Lahore, Pakistan | Tel: +92 42 37581234</p>
+                    </div>
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-meta">
+                        <div><strong>Invoice ID:</strong> <span id="rec-invoice-id">#1024</span></div>
+                        <div><strong>Date:</strong> <span id="rec-date">2026-07-02 21:30:00</span></div>
+                        <div><strong>Cashier Name:</strong> <span id="rec-cashier">Aruj</span> (ID: <span id="rec-cashier-id">241462</span>)</div>
+                        <div id="rec-customer-row" class="hidden"><strong>Customer:</strong> <span id="rec-customer-name">Zainab Fatima</span> (<span id="rec-customer-phone">03219876543</span>)</div>
+                    </div>
+                    <div class="receipt-divider"></div>
+                    <table class="receipt-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-right">Price</th>
+                                <th class="text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rec-items-tbody">
+                            <!-- Invoiced items loaded dynamically -->
+                        </tbody>
+                    </table>
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-totals">
+                        <div class="receipt-totals-row">
+                            <span>Subtotal:</span>
+                            <span id="rec-subtotal">RS. 0.00</span>
+                        </div>
+                        <div class="receipt-totals-row grand-total">
+                            <span>GRAND TOTAL:</span>
+                            <span id="rec-grand-total">RS. 0.00</span>
+                        </div>
+                        <!-- Converted totals detail -->
+                        <div id="rec-converted-rates-container" class="receipt-totals-row converted-detail text-muted">
+                            <span>Equivalent Amount:</span>
+                            <span id="rec-converted-total">USD $0.00</span>
+                        </div>
+                    </div>
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-footer">
+                        <!-- QR Code placeholder for verifying digital invoices -->
+                        <div class="qr-container">
+                            <img id="receipt-qr" src="" alt="Invoice Verification QR">
+                            <p class="small-text text-muted">Scan QR to verify Digital Receipt</p>
+                        </div>
+                        <p class="thanks-msg">Thank you for shopping at Gift Point & Stationers!</p>
+                        <p class="exchange-policy">No return or exchange without receipt. Returns accepted within 7 days.</p>
+                    </div>
+                </div>
+                <div class="receipt-modal-footer no-print">
+                    <button class="btn-secondary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Invoice</button>
+                    <button class="btn-primary" onclick="closeReceiptModal()">Close Receipt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- JS Logic -->
+    <script src="app.js"></script>
+</body>
+</html>

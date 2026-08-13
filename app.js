@@ -1,7 +1,9 @@
 // ==========================================================
 // GIFT POINT & STATIONERS - APPLICATION CORE LOGIC
 // ==========================================================
-const API_BASE_URL = 'http://127.0.0.1:5000/api';
+const API_BASE_URL = window.location.protocol.startsWith('http')
+    ? `${window.location.origin}/api`
+    : 'http://127.0.0.1:5000/api';
 // Global Application State
 const state = {
     user: null, // { userId, name, role }
